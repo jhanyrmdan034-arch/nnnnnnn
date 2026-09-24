@@ -5,7 +5,6 @@ on:
 
 permissions:
   contents: write
-  workflows: write
 
 jobs:
   extract:
@@ -14,9 +13,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Unzip project
+      - name: Unzip project without workflows
         run: |
-          unzip -o *.zip -d .
+          unzip -o *.zip -x ".github/workflows/*" -d .
           rm *.zip
 
       - name: Commit and push extracted files
