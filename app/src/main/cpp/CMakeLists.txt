@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.22.1)
+project(aether_jni)
+
+add_library(aether SHARED aether_stub.c)
+
+add_library(aether_jni SHARED aether_jni.cpp)
+target_link_options(aether_jni PRIVATE
+    "-Wl,-z,max-page-size=16384")
+# No -z common-page-size: it pads PT_GNU_RELRO to a 16K boundary that can
+# overhang its LOAD segment end (RELRO@4K OVERRUN); max-page-size alone
+# carries 16K device support.
+find_library(log-lib log)
+target_link_libraries(aether_jni aether ${log-lib})
+
+# badvpn tun2socks (lwIP-based) — builds libtun2socks.so.
+# This is the whole-device TUN path; the Rust core keeps handling Psiphon
+# lifecycle and exposes the local SOCKS5 port that tun2socks dials.
+add_subdirectory(badvpn)
